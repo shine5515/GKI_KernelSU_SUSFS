@@ -529,7 +529,7 @@ jobs:
               make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=clang LD=ld.lld HOSTLD=ld.lld
             fi
             ccache --show-stats
-            mkdir -p ./bazel-bin/common/kernel_aarch64/
+            mkdir -p ../bazel-bin/common/kernel_aarch64/
             cp ./out/arch/arm64/boot/Image ../bazel-bin/common/kernel_aarch64/
       - name: 修补 Image 文件 安卓12和安卓13(仅限sukisu)
         if: ${{ inputs.use_kpm && inputs.kernelsu_variant == 'SukiSU' && (inputs.android_version == 'android12' || inputs.android_version == 'android13') }}
