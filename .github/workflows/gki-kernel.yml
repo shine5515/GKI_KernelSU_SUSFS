@@ -522,9 +522,9 @@ jobs:
               cd common
               export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/clang-r487747c/bin:$PATH"
               clang --version
-              # gcc -v
-              # export PATH="$GITHUB_WORKSPACE/$CONFIG/gcc/bin:$PATH"
-              # export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/kernel-build-tools/linux-x86/bin:$PATH"
+              export PATH="$GITHUB_WORKSPACE/$CONFIG/gcc/bin:$PATH"
+              gcc -v
+              export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/kernel-build-tools/linux-x86/bin:$PATH"
               make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=clang LD=ld.lld HOSTLD=ld.lld gki_defconfig
               make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=clang LD=ld.lld HOSTLD=ld.lld
             fi
