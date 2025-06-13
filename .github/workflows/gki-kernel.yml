@@ -514,13 +514,6 @@ jobs:
             set -e
             set -x
             cd "$CONFIG"
-            # 替换 BUILD_SYSTEM_DLKM=1 为 BUILD_SYSTEM_DLKM=0
-            sed -i 's/BUILD_SYSTEM_DLKM=1/BUILD_SYSTEM_DLKM=0/' common/build.config.gki.aarch64
-
-            # 删除 MODULES_ORDER=android/gki_aarch64_modules 行
-            sed -i '/MODULES_ORDER=android\/gki_aarch64_modules/d' common/build.config.gki.aarch64
-
-            sed -i '/KMI_SYMBOL_LIST_STRICT_MODE/d' common/build.config.gki.aarch64
 
             echo "Building the kernel..."
             if [ -f "build/build.sh" ]; then
@@ -529,9 +522,9 @@ jobs:
               cd common
               export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/clang-r487747c/bin:$PATH"
               clang --version
-              gcc -v
-              export PATH="$GITHUB_WORKSPACE/$CONFIG/gcc/bin:$PATH"
-              export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/kernel-build-tools/linux-x86/bin:$PATH"
+              # gcc -v
+              # export PATH="$GITHUB_WORKSPACE/$CONFIG/gcc/bin:$PATH"
+              # export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/kernel-build-tools/linux-x86/bin:$PATH"
               make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=clang LD=ld.lld HOSTLD=ld.lld gki_defconfig
               make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=clang LD=ld.lld HOSTLD=ld.lld
             fi
