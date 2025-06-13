@@ -526,9 +526,9 @@ jobs:
               LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh CC="/usr/bin/ccache clang" || exit 1
             else
               cd common
-              export PATH="$CONFIG/prebuilts/clang/host/linux-x86/clang-r487747c/bin:$PATH"
-              export PATH="$CONFIG/gcc/bin:$PATH"
-              export PATH="$CONFIG/prebuilts/kernel-build-tools/linux-x86/bin:$PATH"
+              export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/clang-r487747c/bin:$PATH"
+              export PATH="$GITHUB_WORKSPACE/$CONFIG/gcc/bin:$PATH"
+              export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/kernel-build-tools/linux-x86/bin:$PATH"
               make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=clang LD=ld.lld HOSTLD=ld.lld gki_defconfig
               make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=clang LD=ld.lld HOSTLD=ld.lld
             fi
