@@ -551,7 +551,6 @@ jobs:
                     ARCH=arm64
                     LLVM=1
                     CROSS_COMPILE=aarch64-linux-gnu-
-                    CC="/usr/bin/ccache clang"
                 )
                     
                 echo "--- Running make gki_defconfig ---"
