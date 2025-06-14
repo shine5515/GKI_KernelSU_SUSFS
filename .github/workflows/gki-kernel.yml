@@ -536,14 +536,12 @@ jobs:
 
                 cd common
 
-                # 测试使用Ccache?
-                # CLANG_VERSION="clang-r510928"
-                # export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin:$PATH"
+                export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin:$PATH"
                 export PATH="$GITHUB_WORKSPACE/$CONFIG/gcc/bin:$PATH"
                 export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/kernel-build-tools/linux-x86/bin:$PATH"
-                ls -al $GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/*
-                # echo "--- Clang Version ---"
-                # clang --version
+                ls $GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/*
+                echo "--- Clang Version ---"
+                clang --version
                 echo "--- GCC Version ---"
                 aarch64-linux-gnu-gcc -v
 
@@ -551,10 +549,9 @@ jobs:
                     -j$(nproc --all)
                     O=out
                     ARCH=arm64
+                    LLVM=1
                     CROSS_COMPILE=aarch64-linux-gnu-
                     CC="/usr/bin/ccache clang"
-                    LD=ld.lld
-                    HOSTLD=ld.lld
                 )
                     
                 echo "--- Running make gki_defconfig ---"
