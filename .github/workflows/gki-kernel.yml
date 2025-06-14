@@ -541,7 +541,7 @@ jobs:
                 # export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin:$PATH"
                 export PATH="$GITHUB_WORKSPACE/$CONFIG/gcc/bin:$PATH"
                 export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/kernel-build-tools/linux-x86/bin:$PATH"
-
+                ls -al $GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/*
                 # echo "--- Clang Version ---"
                 # clang --version
                 echo "--- GCC Version ---"
