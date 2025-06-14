@@ -536,12 +536,14 @@ jobs:
 
                 cd common
 
-                export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin:$PATH"
-                export PATH="$GITHUB_WORKSPACE/$CONFIG/gcc/bin:$PATH"
-                export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/kernel-build-tools/linux-x86/bin:$PATH"
+                # 测试使用Ccache?
+                # CLANG_VERSION="clang-r510928"
+                # export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin:$PATH"
+                # export PATH="$GITHUB_WORKSPACE/$CONFIG/gcc/bin:$PATH"
+                # export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/kernel-build-tools/linux-x86/bin:$PATH"
 
-                echo "--- Clang Version ---"
-                clang --version
+                # echo "--- Clang Version ---"
+                # clang --version
                 echo "--- GCC Version ---"
                 aarch64-linux-gnu-gcc -v
 
@@ -550,7 +552,7 @@ jobs:
                     O=out
                     ARCH=arm64
                     CROSS_COMPILE=aarch64-linux-gnu-
-                    CC=$CLANG_VERSION
+                    CC="/usr/bin/ccache clang"
                     LD=ld.lld
                     HOSTLD=ld.lld
                 )
