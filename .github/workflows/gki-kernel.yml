@@ -366,25 +366,11 @@ jobs:
             patch -p1 -F 3 < syscall_hooks.patch
           fi
 
-      - name: 复制源文件 & 应用LZ4KD & ZSTDN补丁
+      - name: LZ4最新版补丁
         if: ${{ inputs.use_zram }}
         run: |
-          echo "更改为配置目录: $CONFIG..."
-          cd "$CONFIG/common"
-          cp -r ../../SukiSU_patch/other/zram/lz4k/include/linux/* ./include/linux/
-          cp -r ../../SukiSU_patch/other/zram/lz4k/lib/* ./lib/
-          cp -r ../../SukiSU_patch/other/zram/lz4k/crypto/* ./crypto/
-          cp -r ../../SukiSU_patch/other/zram/lz4k_oplus ./lib/
-
-          cp ../../SukiSU_patch/other/zram/zram_patch/${{ inputs.kernel_version }}/lz4kd.patch ./
-          echo "正在打lz4kd补丁"
-          patch -p1 -F 3 < lz4kd.patch || true
-          echo '完成LZ4KD补丁'
-
-          cp ../../SukiSU_patch/other/zram/zram_patch/${{ inputs.kernel_version }}/lz4k_oplus.patch ./
-          echo "正在打lz4k_oplus补丁"
-          patch -p1 -F 3 < lz4k_oplus.patch || true
-          echo '完成lz4k_oplus补丁'
+          curl -LSs https://github.com/zzh20188/GKI_KernelSU_SUSFS/raw/refs/heads/dev/lz4.patch -o lz4.patch
+          patch -p1 --fuzz=8 < lz4.patch
 
       - name: 应用隐藏某特征的补丁
         run: |
@@ -399,53 +385,6 @@ jobs:
             patch -p1 -F 3 < 69_hide_stuff.patch
           fi
 
-      - name: LZ4KD & Lz4k_oplus配置
-        if: ${{ inputs.use_zram }}
-        run: |
-          set -x
-          set -e
-          echo "写入LZ4KD&ZSTDN config依赖"
-          CONFIG_FILE="$CONFIG/common/arch/arm64/configs/gki_defconfig"
-
-          if [ "${{ inputs.kernel_version }}" = "5.10" ]; then
-            echo "CONFIG_ZSMALLOC=y" >> "$CONFIG_FILE"
-            echo "CONFIG_ZRAM=y" >> "$CONFIG_FILE"
-            echo "CONFIG_MODULE_SIG=n" >> "$CONFIG_FILE"
-            echo "CONFIG_CRYPTO_LZO=y" >> "$CONFIG_FILE"
-            echo "CONFIG_ZRAM_DEF_COMP_LZ4KD=y" >> "$CONFIG_FILE"
-          fi
-
-          if [ "${{ inputs.kernel_version }}" != "6.6" ] && [ "${{ inputs.kernel_version }}" != "5.10" ]; then
-            # sed -i 's/CONFIG_MODULE_SIG=y/CONFIG_MODULE_SIG=n/g' "$CONFIG_FILE"
-            if grep -q "CONFIG_ZSMALLOC" -- "$CONFIG_FILE"; then
-                echo "提示：文件 $CONFIG_FILE 包含字符串 CONFIG_ZSMALLOC。"
-                sed -i 's/CONFIG_ZSMALLOC=m/CONFIG_ZSMALLOC=y/g' "$CONFIG_FILE"
-            else
-                echo "警告：文件 $CONFIG_FILE 不包含字符串 CONFIG_ZSMALLOC。"
-                echo "CONFIG_ZSMALLOC=y" >> "$CONFIG_FILE"
-            fi
-
-            sed -i 's/CONFIG_ZRAM=m/CONFIG_ZRAM=y/g' "$CONFIG_FILE"
-          fi
-
-          if [ "${{ inputs.kernel_version }}" = "6.6" ]; then
-            echo "CONFIG_ZSMALLOC=y" >> "$CONFIG_FILE"
-            sed -i 's/CONFIG_ZRAM=m/CONFIG_ZRAM=y/g' "$CONFIG_FILE"
-          fi
-
-          if [ "${{ inputs.android_version }}" = "android14" ] || [ "${{ inputs.android_version }}" = "android15" ]; then
-            sed -i 's/"drivers\/block\/zram\/zram\.ko",//g; s/"mm\/zsmalloc\.ko",//g' "$CONFIG/common/modules.bzl"
-            echo "CONFIG_MODULE_SIG_FORCE=n" >> "$CONFIG_FILE"
-            echo 'Android14_Bazel:已修复zram&zsmalloc'
-          fi
-
-          if grep -q "CONFIG_ZSMALLOC=y" "$CONFIG_FILE" && grep -q "CONFIG_ZRAM=y" "$CONFIG_FILE"; then
-            echo "CONFIG_CRYPTO_LZ4HC=y" >> "$CONFIG_FILE"
-            echo "CONFIG_CRYPTO_LZ4K=y" >> "$CONFIG_FILE"
-            echo "CONFIG_CRYPTO_LZ4KD=y" >> "$CONFIG_FILE"
-            echo "CONFIG_CRYPTO_842=y" >> "$CONFIG_FILE"
-            echo "CONFIG_CRYPTO_LZ4K_OPLUS=y" >> "$CONFIG_FILE"
-          fi
           
       - name: 添加SUSFS配置设置
         run: |
@@ -673,7 +612,7 @@ jobs:
             echo "Patching Image file..."
             cd "$CONFIG/out/${{ inputs.android_version }}-${{ inputs.kernel_version }}/dist"
             curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux" -o patch
-            chmod 777 patch
+            chmod 777 patchcurl
             ./patch
             rm -rf Image
             mv oImage Image
