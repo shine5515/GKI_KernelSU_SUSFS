@@ -371,7 +371,7 @@ jobs:
         run: |
           cd "$CONFIG/common"
           curl -LSs https://github.com/zzh20188/GKI_KernelSU_SUSFS/raw/refs/heads/dev/lz4.patch -o lz4.patch
-          patch -p1 --fuzz=8 < lz4.patch
+          patch -p1 --fuzz=8 --forward  < lz4.patch
 
       - name: 应用隐藏某特征的补丁
         run: |
@@ -766,3 +766,12 @@ jobs:
         with:
           name: ${{ inputs.kernelsu_variant }}_kernel-${{ env.CONFIG }}-Anykernel3
           path: ./AnyKernel3/*
+      
+      - name: 上传debug资源
+        uses: actions/upload-artifact@v4
+        with:
+          # 上传产物的名称，供您后续手动下载
+          name: common-files-artifact
+          path: |
+            ${{ env.CONFIG }}/common/lib/lz4/lz4_decompress.c.rej
+            ${{ env.CONFIG }}/common/lib/lz4/lz4_decompress.c
