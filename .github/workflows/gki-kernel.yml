@@ -369,6 +369,7 @@ jobs:
       - name: LZ4最新版补丁
         if: ${{ inputs.use_zram }}
         run: |
+          cd "$CONFIG/common"
           curl -LSs https://github.com/zzh20188/GKI_KernelSU_SUSFS/raw/refs/heads/dev/lz4.patch -o lz4.patch
           patch -p1 --fuzz=8 < lz4.patch
 
