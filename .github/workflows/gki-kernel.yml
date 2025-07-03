@@ -367,6 +367,7 @@ jobs:
           fi
 
       - name: LZ4最新版补丁
+        continue-on-error: true
         if: ${{ inputs.use_zram }}
         run: |
           cd "$CONFIG/common"
