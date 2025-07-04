@@ -768,11 +768,11 @@ jobs:
           name: ${{ inputs.kernelsu_variant }}_kernel-${{ env.CONFIG }}-Anykernel3
           path: ./AnyKernel3/*
       
-      - name: 上传debug资源
-        uses: actions/upload-artifact@v4
-        with:
-          # 上传产物的名称，供您后续手动下载
-          name: common-files-artifact
-          path: |
-            ${{ env.CONFIG }}/common/lib/lz4/lz4_decompress.c.rej
-            ${{ env.CONFIG }}/common/lib/lz4/lz4_decompress.c
+      # - name: 上传debug资源
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     # 上传产物的名称，供您后续手动下载
+      #     name: common-files-artifact
+      #     path: |
+      #       ${{ env.CONFIG }}/common/lib/lz4/lz4_decompress.c.rej
+      #       ${{ env.CONFIG }}/common/lib/lz4/lz4_decompress.c
