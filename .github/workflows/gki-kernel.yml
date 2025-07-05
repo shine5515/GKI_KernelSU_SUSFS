@@ -545,7 +545,55 @@ jobs:
             if [ -f "build/build.sh" ]; then
               LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh CC="/usr/bin/ccache clang" || exit 1
             else
-              tools/bazel build --disk_cache=/home/runner/.cache/bazel --config=fast --lto=thin //common:kernel_aarch64_dist || exit 1
+              case "${{ inputs.kernel_version }}" in
+                  "6.1")
+                      CLANG_VERSION="clang-r487747c"
+                      ;;
+                  "6.6")
+                      CLANG_VERSION="clang-r510928"
+                      ;;
+                  *)
+                      echo "Error: Unsupported kernel_version: '${{ inputs.kernel_version }}'"
+                      exit 1
+                      ;;
+              esac
+
+                echo "Using Clang version: $CLANG_VERSION for Kernel version: ${{ inputs.kernel_version }}"
+
+                cd common
+
+                export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin:$PATH"
+                export PATH="$GITHUB_WORKSPACE/$CONFIG/gcc/bin:$PATH"
+                export PATH="$GITHUB_WORKSPACE/$CONFIG/prebuilts/kernel-build-tools/linux-x86/bin:$PATH"
+
+                echo "--- Clang Version ---"
+                clang --version
+                echo "--- GCC Version ---"
+                aarch64-linux-gnu-gcc -v
+
+                COMMON_MAKE_PARAMS=(
+                  -j$(nproc --all)
+                  O=out
+                  ARCH=arm64
+                  LLVM=1
+                  CROSS_COMPILE=aarch64-linux-gnu-
+              )
+
+              BUILD_TARGETS=(
+                  Image
+                  Image.lz4
+                  Image.gz
+                  modules
+              )
+              
+              echo "--- Running make gki_defconfig ---"
+              make "${COMMON_MAKE_PARAMS[@]}" gki_defconfig || { echo "make defconfig failed"; exit 1; }
+              make "${COMMON_MAKE_PARAMS[@]}" "${BUILD_TARGETS[@]}" || { echo "make failed"; exit 1; }
+  
+              mkdir -p ../bazel-bin/common/kernel_aarch64/
+              echo "debug:输出内核版本号"
+              strings out/arch/arm64/boot/Image | grep 'Linux version'
+              cp ./out/arch/arm64/boot/Image* ../bazel-bin/common/kernel_aarch64/
             fi
             ccache --show-stats
             
