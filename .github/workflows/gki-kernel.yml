@@ -586,28 +586,28 @@ jobs:
             sed -i '/^CONFIG_LOCALVERSION=/ s/="\([^"]*\)"/="${{ inputs.version }}"/' ./common/arch/arm64/configs/gki_defconfig
           fi
 
-      - name: 配置内核名称(快速构建)
-        if: ${{ inputs.fast }}
-        run: |
-            echo "更改为配置目录: $CONFIG..."
-            cd "$CONFIG"
-            sed -i 's/-dirty//' ./common/scripts/setlocalversion
-            echo "启用快速编译：设置随机字符串"
-            case "${{ inputs.kernel_version }}" in
-                  "6.1")
-                      echo "进入6.1 内核名称编辑"
-                      sed -i '0,/^android_release=/s/\(android_release=.*\)/\1android14-11/' ./common/scripts/setlocalversion
-                      ;;
-                  "6.6")
-                      echo "进入6.6 内核名称编辑"
-                      sed -i 's/^file_localversion=.*/file_localversion=-android15-8/' ./common/scripts/setlocalversion
-                      sed -i '$s/.*/echo "${KERNELVERSION}${file_localversion}${scm_version}${config_localversion}"/' ./common/scripts/setlocalversion
-                      ;;
-                  *)
-                      echo "Error: Unsupported kernel_version: '${{ inputs.kernel_version }}'"
-                      exit 1
-                      ;;
-              esac
+      # - name: 配置内核名称(快速构建)
+      #   if: ${{ inputs.fast }}
+      #   run: |
+      #       echo "更改为配置目录: $CONFIG..."
+      #       cd "$CONFIG"
+      #       sed -i 's/-dirty//' ./common/scripts/setlocalversion
+      #       echo "启用快速编译：设置随机字符串"
+      #       case "${{ inputs.kernel_version }}" in
+      #             "6.1")
+      #                 echo "进入6.1 内核名称编辑"
+      #                 sed -i '0,/^android_release=/s/\(android_release=.*\)/\1android14-11/' ./common/scripts/setlocalversion
+      #                 ;;
+      #             "6.6")
+      #                 echo "进入6.6 内核名称编辑"
+      #                 sed -i 's/^file_localversion=.*/file_localversion=-android15-8/' ./common/scripts/setlocalversion
+      #                 sed -i '$s/.*/echo "${KERNELVERSION}${file_localversion}${scm_version}${config_localversion}"/' ./common/scripts/setlocalversion
+      #                 ;;
+      #             *)
+      #                 echo "Error: Unsupported kernel_version: '${{ inputs.kernel_version }}'"
+      #                 exit 1
+      #                 ;;
+      #         esac
             
 
       - name: Build with retry
@@ -631,6 +631,7 @@ jobs:
             elif [ "${{ inputs.fast }}" != "true" ]; then
               tools/bazel build --disk_cache=/home/runner/.cache/bazel --config=fast --lto=thin //common:kernel_aarch64_dist || exit 1
             else
+              sed -i 's/-dirty//' ./common/scripts/setlocalversion
               case "${{ inputs.kernel_version }}" in
                   "6.1")
                       CLANG_VERSION="clang-r487747c"
