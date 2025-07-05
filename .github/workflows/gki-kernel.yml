@@ -563,6 +563,7 @@ jobs:
           # 设置构建时间为上方的 `CURRENT_TIME` 变量 (5系)
           perl -pi -e "s{UTS_VERSION=\"\\\$\(echo \\\$UTS_VERSION \\\$CONFIG_FLAGS \\\$TIMESTAMP \\| cut -b -\\\$UTS_LEN\)\"}{UTS_VERSION=\"#1 SMP PREEMPT $CURRENT_TIME\"}" ./common/scripts/mkcompile_h
           if [ -f "build/build.sh" ]; then
+            echo "5系:删除dirty字符串
             sed -i 's/-dirty//' ./common/scripts/setlocalversion
           else
           # 设置构建时间 (6.1+)
@@ -631,7 +632,7 @@ jobs:
             elif [ "${{ inputs.fast }}" != "true" ]; then
               tools/bazel build --disk_cache=/home/runner/.cache/bazel --config=fast --lto=thin //common:kernel_aarch64_dist || exit 1
             else
-              sed -i 's/-dirty//' ./common/scripts/setlocalversion
+              # sed -i 's/-dirty//' ./common/scripts/setlocalversion
               case "${{ inputs.kernel_version }}" in
                   "6.1")
                       CLANG_VERSION="clang-r487747c"
