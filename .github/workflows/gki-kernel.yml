@@ -303,6 +303,7 @@ jobs:
               patch -p1 --fuzz=3 --forward < core_hook.patch
               patch -p1 --fuzz=3 --forward < ksud.patch
               patch -p1 --fuzz=3 --forward < selinux.patch
+              patch -p1 --fuzz=3 --forward < rules.c.patch
             fi
             
           elif [ "${{ inputs.kernelsu_variant }}" == "MKSU" ]; then
